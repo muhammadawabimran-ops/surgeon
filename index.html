@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dr. Surgeon | Advanced Cardiac Care</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Three.js & GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <!-- Tailwind Config -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        medical: {
+                            dark: '#0B1120',   // Deepest Navy
+                            primary: '#1e293b', // Card Background
+                            accent: '#38bdf8',  // Cyan/Blue Highlight
+                            gold: '#c0a062',    // Luxury Gold
+                            goldHover: '#d4b475'
+                        }
+                    },
+                    fontFamily: {
+                        serif: ['"Playfair Display"', 'serif'],
+                        sans: ['"Inter"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #0B1120;
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+        
+        /* 3D Background Canvas */
+        #canvas-container {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100vh;
+            z-index: -1;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        /* Glassmorphism */
+        .glass {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* 3D Card Effects */
+        .surgery-card {
+            transform-style: preserve-3d;
+            perspective: 1000px;
+            will-change: transform, opacity;
+        }
+        
+        /* Utility */
+        .text-gradient {
+            background: linear-gradient(to right, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- 3D Background -->
+    <div id="canvas-container"></div>
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 glass transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="text-2xl font-serif font-bold tracking-wide text-white">
+                DR. SURGEON<span class="text-medical-gold">.</span>
+            </div>
+            
+            <div class="hidden md:flex space-x-8 text-xs font-sans font-bold tracking-[0.2em] uppercase text-gray-400">
+                <a href="#home" class="hover:text-medical-gold transition-colors">Home</a>
+                <a href="#portfolio" class="hover:text-medical-gold transition-colors">Procedures</a>
+                <a href="#about" class="hover:text-medical-gold transition-colors">About</a>
+                <a href="#contact" class="hover:text-medical-gold transition-colors">Contact</a>
+            </div>
+
+            <a href="#contact" class="bg-medical-gold text-medical-dark px-6 py-2 rounded-sm font-bold text-xs uppercase tracking-wider hover:bg-white hover:text-black transition-all duration-300 shadow-[0_0_15px_rgba(192,160,98,0.4)]">
+                Book Consult
+            </a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header id="home" class="relative min-h-screen flex items-center justify-center pt-16">
+        <div class="text-center px-4 max-w-5xl mx-auto z-10">
+            <div class="hero-anim opacity-0 translate-y-10">
+                <p class="text-medical-accent uppercase tracking-[0.4em] text-xs font-bold mb-6">World Class Cardiac Care</p>
+                <h1 class="text-5xl md:text-8xl font-serif font-medium leading-none mb-8 text-gradient">
+                    Precision.<br/>Compassion.<br/>Excellence.
+                </h1>
+                <p class="text-gray-400 text-lg md:text-xl font-light mb-10 max-w-2xl mx-auto leading-relaxed">
+                    Pioneering minimally invasive cardiac techniques with advanced spatial planning for optimal patient recovery.
+                </p>
+                <div class="flex flex-col md:flex-row gap-5 justify-center">
+                    <a href="#portfolio" class="px-8 py-4 bg-white text-medical-dark font-bold text-sm tracking-widest uppercase rounded-sm hover:bg-medical-gold transition-all duration-300">
+                        View Procedures
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Portfolio Section -->
+    <section id="portfolio" class="py-24 relative z-10">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-16 border-b border-white/10 pb-8">
+                <div>
+                    <h4 class="text-medical-gold text-sm font-bold uppercase tracking-widest mb-2">My Work</h4>
+                    <h2 class="text-4xl md:text-5xl font-serif text-white">Surgical Procedures</h2>
+                </div>
+                <p class="text-gray-500 max-w-md text-right mt-4 md:mt-0">
+                    Comprehensive cardiac interventions ranging from valve repair to complex bypass grafting.
+                </p>
+            </div>
+
+            <!-- DYNAMIC CONTENT GRID -->
+            <div id="cards-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Javascript will inject content here -->
+                 <div class="text-white">Loading Procedures...</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-24 bg-[#111827] relative z-10">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center gap-16">
+            <div class="w-full md:w-1/2">
+                <div class="relative rounded-sm overflow-hidden border border-white/10 group">
+                    <img src="https://images.unsplash.com/photo-1631815589968-fdb09a223b1e?q=80&w=1000&auto=format&fit=crop" 
+                         alt="Surgeon working" 
+                         class="w-full opacity-60 grayscale group-hover:grayscale-0 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700">
+                    <div class="absolute inset-0 bg-gradient-to-t from-medical-dark via-transparent to-transparent"></div>
+                </div>
+            </div>
+            <div class="w-full md:w-1/2">
+                <h3 class="text-medical-accent font-bold uppercase tracking-widest mb-2 text-xs">The Surgeon</h3>
+                <h2 class="text-4xl font-serif text-white mb-6">Board Certified Excellence</h2>
+                
+                <div id="bio-container">
+                    <p class="text-gray-400 mb-6 leading-relaxed">
+                        With over a decade of specialized training in complex cardiothoracic surgeries, Dr. Surgeon combines artistic precision with medical science. Dedicated to the patient experience, every procedure is tailored to individual anatomical needs.
+                    </p>
+                    <div id="extra-bio" class="hidden text-gray-400 mb-6 leading-relaxed border-l-2 border-medical-gold pl-4">
+                        <p class="mb-4">Dr. Surgeon graduated top of the class from Johns Hopkins and completed residency at Mayo Clinic. Specializing in robotic-assisted valve repair and aortic reconstruction.</p>
+                        <p>Awarded "Top Scalpel" in 2023 for contributions to minimally invasive research.</p>
+                    </div>
+                </div>
+
+                <button id="read-bio-btn" class="text-medical-gold font-bold uppercase text-xs tracking-widest border-b border-medical-gold pb-1 hover:text-white hover:border-white transition-all">
+                    Read Full Bio
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-24 relative z-10 border-t border-white/5">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+            <h2 class="text-4xl font-serif text-white mb-4">Book A Consultation</h2>
+            <p class="text-gray-400 mb-12">Private consultations available for complex cardiac cases.</p>
+            
+            <form class="bg-medical-primary/40 p-8 rounded-lg border border-white/5 text-left space-y-6 backdrop-blur-sm" onsubmit="event.preventDefault(); alert('Request Sent!');">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-xs uppercase tracking-wider text-gray-500 mb-2">Patient Name</label>
+                        <input type="text" class="w-full bg-[#0B1120] border border-white/10 p-3 text-white focus:border-medical-gold outline-none transition-colors" placeholder="John Doe">
+                    </div>
+                    <div>
+                        <label class="block text-xs uppercase tracking-wider text-gray-500 mb-2">Email Address</label>
+                        <input type="email" class="w-full bg-[#0B1120] border border-white/10 p-3 text-white focus:border-medical-gold outline-none transition-colors" placeholder="email@example.com">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs uppercase tracking-wider text-gray-500 mb-2">Procedure Interest</label>
+                    <select class="w-full bg-[#0B1120] border border-white/10 p-3 text-white focus:border-medical-gold outline-none transition-colors">
+                        <option>General Cardiac Consultation</option>
+                        <option>CABG (Bypass)</option>
+                        <option>Valve Replacement</option>
+                        <option>Aneurysm Repair</option>
+                        <option>Pacemaker</option>
+                    </select>
+                </div>
+                <button class="w-full bg-white text-medical-dark font-bold py-4 uppercase tracking-widest hover:bg-medical-gold transition-colors duration-300">
+                    Submit Request
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <footer class="bg-black py-8 text-center border-t border-white/10 relative z-10">
+        <p class="text-gray-600 text-xs uppercase tracking-widest">© 2024 Dr. Surgeon Portfolio. All rights reserved.</p>
+    </footer>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            
+            // ----------------------------------------------------
+            // 1. CARDIAC SURGERY DATA
+            // ----------------------------------------------------
+            const surgeryData = [
+                {
+                    id: 1,
+                    title: "Coronary Artery Bypass",
+                    desc: "Restoring blood flow to the heart muscle by diverting the flow of blood around a section of a blocked or partially blocked artery.",
+                    icon: "🫀",
+                    link: "surgery1.html"
+                },
+                {
+                    id: 2,
+                    title: "Heart Valve Replacement",
+                    desc: "Replacement of one or more of the heart valves with either an artificial heart valve or a bioprosthesis.",
+                    icon: "🩺",
+                    link: "surgery2.html"
+                },
+                {
+                    id: 3,
+                    title: "Aortic Aneurysm Repair",
+                    desc: "Procedure to treat an enlargement of the aorta. Using advanced endovascular techniques to prevent rupture.",
+                    icon: "🩸",
+                    link: "surgery3.html"
+                },
+                {
+                    id: 4,
+                    title: "Mitral Valve Repair",
+                    desc: "Complex reconstruction of the mitral valve to treat regurgitation or stenosis, preserving the native tissue.",
+                    icon: "🔬",
+                    link: "surgery4.html"
+                },
+                {
+                    id: 5,
+                    title: "Pacemaker Implantation",
+                    desc: "Implantation of a small electronic device that helps regulate slow electrical problems with the heart.",
+                    icon: "⚡",
+                    link: "surgery5.html"
+                }
+            ];
+
+            // ----------------------------------------------------
+            // 2. BUILD CARD GRID
+            // ----------------------------------------------------
+            const container = document.getElementById('cards-container');
+            container.innerHTML = ''; // Clear loading text
+
+            surgeryData.forEach((item, index) => {
+                // We create an Anchor tag as the wrapper so the whole card is clickable on mobile
+                const card = document.createElement('a');
+                card.href = item.link;
+                card.className = "surgery-card block group relative p-8 bg-[#162032] border border-white/5 hover:border-medical-gold/50 transition-all duration-500 cursor-pointer overflow-hidden flex flex-col justify-between h-full min-h-[320px]";
+                
+                card.innerHTML = `
+                    <div class="absolute top-0 right-0 p-6 opacity-5 text-8xl font-serif group-hover:opacity-10 transition-opacity select-none text-white">
+                        ${index + 1}
+                    </div>
+                    
+                    <div>
+                        <div class="text-3xl mb-6 text-medical-gold bg-white/5 w-14 h-14 rounded-full flex items-center justify-center border border-white/5 shadow-inner">
+                            ${item.icon}
+                        </div>
+                        
+                        <h3 class="text-xl font-serif text-white mb-4 group-hover:text-medical-gold transition-colors">
+                            ${item.title}
+                        </h3>
+                        
+                        <p class="text-gray-400 text-sm leading-relaxed mb-6 font-light">
+                            ${item.desc}
+                        </p>
+                    </div>
+
+                    <div class="mt-auto pt-6 border-t border-white/5 flex items-center justify-between">
+                        <span class="text-xs font-bold uppercase tracking-widest text-gray-500 group-hover:text-white transition-colors">View Details</span>
+                        <span class="text-medical-gold transform group-hover:translate-x-1 transition-transform">→</span>
+                    </div>
+                `;
+
+                // 3D Tilt Event Listeners - Only active on devices with hover capability (Desktop)
+                // This prevents sticky/glitchy behavior on mobile touch
+                if (window.matchMedia("(hover: hover)").matches) {
+                    card.addEventListener('mousemove', (e) => {
+                        const rect = card.getBoundingClientRect();
+                        const x = e.clientX - rect.left;
+                        const y = e.clientY - rect.top;
+                        const cx = rect.width / 2;
+                        const cy = rect.height / 2;
+                        
+                        // Calculate rotation (max 7 degrees)
+                        const dx = (x - cx) / cx;
+                        const dy = (y - cy) / cy;
+                        
+                        card.style.transform = `perspective(1000px) rotateX(${-dy * 7}deg) rotateY(${dx * 7}deg) scale(1.02)`;
+                        card.style.zIndex = "10";
+                        card.style.background = "#1a253a"; // Slightly lighter on hover
+                    });
+
+                    card.addEventListener('mouseleave', () => {
+                        card.style.transform = `perspective(1000px) rotateX(0) rotateY(0) scale(1)`;
+                        card.style.zIndex = "1";
+                        card.style.background = "#162032";
+                    });
+                }
+
+                container.appendChild(card);
+            });
+
+            // ----------------------------------------------------
+            // 3. READ BIO FUNCTIONALITY
+            // ----------------------------------------------------
+            const bioBtn = document.getElementById('read-bio-btn');
+            const extraBio = document.getElementById('extra-bio');
+            
+            if(bioBtn && extraBio) {
+                bioBtn.addEventListener('click', () => {
+                    if (extraBio.classList.contains('hidden')) {
+                        extraBio.classList.remove('hidden');
+                        gsap.from(extraBio, {height: 0, opacity: 0, duration: 0.5});
+                        bioBtn.textContent = "Close Bio";
+                    } else {
+                        extraBio.classList.add('hidden');
+                        bioBtn.textContent = "Read Full Bio";
+                    }
+                });
+            }
+
+            // ----------------------------------------------------
+            // 4. ANIMATIONS (GSAP)
+            // ----------------------------------------------------
+            gsap.registerPlugin(ScrollTrigger);
+
+            // Hero Entrance
+            gsap.to(".hero-anim", {opacity: 1, y: 0, duration: 1.2, ease: "power3.out", delay: 0.2});
+
+            // Card Cascade - Adjusted for Mobile Reliability
+            // using autoAlpha ensures visibility is toggled correctly
+            gsap.from(".surgery-card", {
+                scrollTrigger: { 
+                    trigger: "#cards-container", 
+                    start: "top 90%" // Trigger slightly earlier on mobile
+                },
+                y: 50, 
+                opacity: 0, 
+                duration: 0.8, 
+                stagger: 0.1, 
+                ease: "power2.out",
+                clearProps: "all" // Clears inline styles after animation to prevent mobile conflicts
+            });
+
+            // ----------------------------------------------------
+            // 5. THREE.JS BACKGROUND
+            // ----------------------------------------------------
+            const initThree = () => {
+                const canvasBox = document.getElementById('canvas-container');
+                const scene = new THREE.Scene();
+                // Fog helps blend particles into background
+                scene.fog = new THREE.FogExp2(0x0B1120, 0.002);
+
+                const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+                camera.position.z = 20;
+
+                const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                renderer.setPixelRatio(window.devicePixelRatio); // Sharpness
+                canvasBox.appendChild(renderer.domElement);
+
+                // Create Particles (Representing Cells/Data)
+                const geometry = new THREE.BufferGeometry();
+                const count = 1000;
+                const positions = new Float32Array(count * 3);
+                
+                for(let i=0; i<count*3; i++) {
+                    positions[i] = (Math.random() - 0.5) * 80; // Spread wide
+                }
+                geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+                const material = new THREE.PointsMaterial({
+                    size: 0.12,
+                    color: 0x38bdf8, // Medical blue
+                    transparent: true, 
+                    opacity: 0.6
+                });
+                
+                const particles = new THREE.Points(geometry, material);
+                scene.add(particles);
+
+                // Wireframe Sphere (Abstract Heart/Globe)
+                const sphereGeo = new THREE.SphereGeometry(12, 32, 32);
+                const sphereMat = new THREE.MeshBasicMaterial({
+                    color: 0xc0a062, // Gold
+                    wireframe: true,
+                    transparent: true,
+                    opacity: 0.05
+                });
+                const sphere = new THREE.Mesh(sphereGeo, sphereMat);
+                scene.add(sphere);
+
+                // Animation Loop
+                let mouseX = 0, mouseY = 0;
+                
+                // Parallax Mouse Effect
+                document.addEventListener('mousemove', (e) => {
+                    mouseX = (e.clientX - window.innerWidth/2) * 0.001;
+                    mouseY = (e.clientY - window.innerHeight/2) * 0.001;
+                });
+
+                const clock = new THREE.Clock();
+
+                const animate = () => {
+                    const t = clock.getElapsedTime();
+                    
+                    // Rotate world
+                    particles.rotation.y = t * 0.05 + mouseX;
+                    particles.rotation.x = mouseY;
+                    
+                    sphere.rotation.y = t * 0.1;
+                    sphere.rotation.x = t * 0.05;
+
+                    renderer.render(scene, camera);
+                    requestAnimationFrame(animate);
+                };
+                animate();
+
+                // Resize Handler
+                window.addEventListener('resize', () => {
+                    camera.aspect = window.innerWidth / window.innerHeight;
+                    camera.updateProjectionMatrix();
+                    renderer.setSize(window.innerWidth, window.innerHeight);
+                });
+            };
+            
+            initThree();
+        });
+    </script>
+</body>
+</html>
